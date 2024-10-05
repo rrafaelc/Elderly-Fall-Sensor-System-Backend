@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('devices', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
+            $table->boolean('status')->default(1);
+            $table->dateTime('last_verification')->nullable();
             $table->timestamps();
         });
     }
@@ -24,5 +26,6 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('devices');
+
     }
 };

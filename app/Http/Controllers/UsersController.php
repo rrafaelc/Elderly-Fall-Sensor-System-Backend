@@ -49,6 +49,10 @@ class UsersController extends Controller
             return response()->json(['erro' => 'não foi possivel atualizar, usuário não encontrado.'], 404);
         }
 
+        $user = $this->user->find($id);
+        $user->name = $request->input('name');
+        $user->whatsapp_number = $request->input('whatsapp_number');
+        $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
         $user->save();
         //$user->update($request->all());
