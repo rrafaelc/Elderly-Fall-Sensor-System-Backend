@@ -1,0 +1,22 @@
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: laravel_mysql
+        environment:
+            MYSQL_DATABASE: fall_detection
+            MYSQL_ROOT_PASSWORD: 12345
+            MYSQL_PASSWORD: 12345
+        volumes:
+            - mysql_data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        networks:
+            - laravel
+
+volumes:
+    mysql_data:
+        driver: local
+
+networks:
+    laravel:
+        driver: bridge
