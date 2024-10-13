@@ -4,37 +4,53 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Device;
-use App\Models\PersonDevice;
+//use App\Models\PersonDevice;
 
 class DevicesController extends Controller
 {
+
     public function __construct(Device $device)
     {
+       
         $this->device = $device;
     }
 
 
+    // public function create1(Request $request)
+    // {
+    //     $request->validate([
+    //         'user_id' => 'required|exists:users,id', // Verifique se o usuário existe
+    //         //'person_id' => 'required|exists:persons,id', // Verifique se a pessoa existe
+    //         'name' => 'required|string',
+    //         'whatsapp_number' =>'required|integer'
+    //     ]);
+
+    //     // Cria o dispositivo
+    //     $device = Device::create(['name' => $request->name]);
+
+    //     // Associa o usuário, pessoa e dispositivo na tabela intermediária
+    //     PersonDevice::create([
+    //         'user_id' => $request->user_id,
+    //         //'person_id' => $request->person_id,
+    //         'whatsapp_number' => $request->whatsapp_number,
+    //         'device_id' => $device->id,
+    //     ]);
+
+    //     return response()->json(['message' => 'Device created and associated successfully.', 'device' => $device]);
+    // }
+
     public function create(Request $request)
     {
         $request->validate([
-            'user_id' => 'required|exists:users,id', // Verifique se o usuário existe
-            'person_id' => 'required|exists:persons,id', // Verifique se a pessoa existe
+            'user_id' => 'required|exists:users,id',
             'name' => 'required|string',
+            'whatsapp_number' =>'required|integer'
         ]);
 
-        // Cria o dispositivo
-        $device = Device::create(['name' => $request->name]);
-
-        // Associa o usuário, pessoa e dispositivo na tabela intermediária
-        PersonDevice::create([
-            'user_id' => $request->user_id,
-            'person_id' => $request->person_id,
-            'device_id' => $device->id,
-        ]);
+        $device = Device::create(['name' => $request->name,'user_id' => $request->user_id,         'whatsapp_number' => $request->whatsapp_number]);
 
         return response()->json(['message' => 'Device created and associated successfully.', 'device' => $device]);
     }
-
 
 
     public function index()
@@ -57,8 +73,8 @@ class DevicesController extends Controller
 
     public function show($id)
     {
-        $user = $this->device->find($id);
-        if ($user === null) {
+        $device = $this->device->find($id);
+        if ($device === null) {
             return response()->json(['erro' => 'Dispositivo não encontrado.'], 404);
         }
         return response()->json($device, 200);
@@ -84,18 +100,4 @@ class DevicesController extends Controller
         $device->delete();
         return response()->json(['sucess' => true]);
     }
-
-    //ALTERNATIVO PARA O METODO CREATE
-     // Método para associar um dispositivo a uma pessoa
-     public function associate(Request $request, $deviceId)
-     {
-         $request->validate([
-             'person_id' => 'required|exists:persons,id', // Valida se o person_id existe
-         ]);
-
-         $device = Device::findOrFail($deviceId);
-         $device->persons()->attach($request->person_id);
-
-         return response()->json(['message' => 'Device associated successfully.']);
-     }
 }

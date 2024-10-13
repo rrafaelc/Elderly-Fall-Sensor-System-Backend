@@ -18,10 +18,19 @@ Route::get("user/{user}", "App\Http\Controllers\UsersController@show");
 Route::post("user", "App\Http\Controllers\UsersController@store");
 
 
-//
+//JWT ROUTES
+Route::post('login', "App\Http\Controllers\AuthController@login");
+Route::post('logout', "App\Http\Controllers\AuthController@logout");
+
+
+
+//PRIVATE ROUTES
 //USER ROUTES
+Route::prefix('v1')->middleware(['auth:api'])->group(function() {
 Route::patch("user/{user}", "App\Http\Controllers\UsersController@update");
 Route::delete("user/{user}", "App\Http\Controllers\UsersController@destroy");
+Route::post('me', "App\Http\Controllers\AuthController@me");
+Route::post('refresh', "App\Http\Controllers\AuthController@refresh");
 
 //PERSON ROUTES
 Route::get("person", "App\Http\Controllers\PersonsController@index");
@@ -40,8 +49,4 @@ Route::post("devicecreate", "App\Http\Controllers\DevicesController@create");
 
 Route::post('/device/{deviceId}/associate', "App\Http\Controllers\DevicesController@associate");
 
-
-Route::post('login', "App\Http\Controllers\AuthController@login");
-Route::post('logout', "App\Http\Controllers\AuthController@logout");
-Route::post('refresh', "App\Http\Controllers\AuthController@refresh");
-Route::post('me', "App\Http\Controllers\AuthController@me");
+});

@@ -8,10 +8,12 @@ use App\Models\User;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
 //use PHPOpenSourceSaver\JWTAuth\Facades\JWTFactory;
 
+
 class AuthController extends Controller
 {
     public function login(Request $request)
     {
+
         $credentials = $request->only('email', 'password');
 
         if (!$token = JWTAuth::attempt($credentials)) {
@@ -33,5 +35,16 @@ class AuthController extends Controller
             ]
         ]);
     }
+
+    public function me(){
+
+        $user = JWTAuth::parseToken()->authenticate();
+        return response()->json($user);
+    }
+
+    // public function refresh() {
+    //     $token = auth('api')->refresh();
+    //     return response()->json(['token' => $token]);
+    // }
 
 }

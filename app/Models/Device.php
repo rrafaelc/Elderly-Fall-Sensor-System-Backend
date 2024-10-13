@@ -11,7 +11,7 @@ class Device extends Model
 
 
     use HasFactory;
-    protected $fillable = ['user_id', 'person_id',
+    protected $fillable = ['user_id', 'whatsapp_number',
         'name',
     ];
 
