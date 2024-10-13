@@ -1,5 +1,6 @@
 <?php
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SensorsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,10 @@ Route::patch("device/{device}", "App\Http\Controllers\DevicesController@update")
 Route::delete("device/{device}", "App\Http\Controllers\DevicesController@destroy");
 Route::post("devicecreate", "App\Http\Controllers\DevicesController@create");
 
-Route::post('/device/{deviceId}/associate', "App\Http\Controllers\DevicesController@associate");
+
+//SENSOR ROUTES
+Route::get("sensor", "App\Http\Controllers\SensorsController@index");
+Route::get("sensor/{sensor}", "App\Http\Controllers\SensorsController@show");
+Route::post("sensor", "App\Http\Controllers\SensorsController@store");
 
 });
