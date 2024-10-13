@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 class Device extends Model
 {
 
-
+    protected $connection = 'mysql';
     use HasFactory;
     protected $fillable = ['user_id', 'whatsapp_number',
         'name',
