@@ -17,6 +17,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
+    protected $connection = 'mysql';
     protected $fillable = ['whatsapp_number',
         'name',
         'email',
