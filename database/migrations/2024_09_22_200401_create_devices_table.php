@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('devices', function (Blueprint $table) {
+        Schema::connection('mysql')->create('devices', function (Blueprint $table) {
             $table->id();
             //$table->bigInteger('user_id');
             $table->string('name', 50);
@@ -29,7 +29,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('devices');
+        Schema::connection('mysql')->dropIfExists('devices');
 
     }
 };
