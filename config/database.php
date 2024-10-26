@@ -113,8 +113,8 @@ return [
         ],
         'mongodb' => [
     'driver' => 'mongodb',
-    'dsn' => env('DB_URI'),
-    'database' => 'elderly_mongodb',
+    'dsn' => env('MONGO_DB_URI'),
+    'database' => env('MONGO_DB_DATABASE','elderly_mongodb'),
   ],
 
     ],
