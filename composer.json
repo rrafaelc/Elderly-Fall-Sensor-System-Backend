@@ -8,8 +8,9 @@
         "php": "^8.2",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
-        "nesbot/carbon": "^3.8",
         "mongodb/laravel-mongodb": "^4.8",
+        "nesbot/carbon": "^3.8",
+        "php-mqtt/client": "^2.1",
         "php-open-source-saver/jwt-auth": "^2.3",
         "phpoffice/phpspreadsheet": "^3.3"
     },
