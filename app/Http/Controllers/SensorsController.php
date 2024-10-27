@@ -30,7 +30,7 @@ class SensorsController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'acceleration' => 'required|numeric',
+            'aceleration' => 'required|numeric',
             'rotation' => 'required|numeric',
             'time' => 'required|string', // Validar como string
         ]);
