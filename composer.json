@@ -11,6 +11,7 @@
         "mongodb/laravel-mongodb": "^4.8",
         "nesbot/carbon": "^3.8",
         "php-mqtt/client": "^2.1",
+        "php-mqtt/laravel-client": "^1.5",
         "php-open-source-saver/jwt-auth": "^2.3",
         "phpoffice/phpspreadsheet": "^3.3"
     },

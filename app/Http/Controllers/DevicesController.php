@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Device;
+use PhpMqtt\Client\Facades\MQTT;
+use App\Services\MqttService;
+use PhpMqtt\Client\MqttClient;
+use PhpMqtt\Client\ConnectionSettings;
 //use App\Models\PersonDevice;
 
 class DevicesController extends Controller
@@ -11,7 +15,7 @@ class DevicesController extends Controller
 
     public function __construct(Device $device)
     {
-       
+
         $this->device = $device;
     }
 
@@ -100,4 +104,56 @@ class DevicesController extends Controller
         $device->delete();
         return response()->json(['sucess' => true]);
     }
+
+
+    public function sendSerialNumber(Request $request)
+{
+    // Obtém o número de série do request
+    $serialNumber = $request->input('serial_number');
+
+    // Verifica se o número de série foi fornecido
+    if (!$serialNumber) {
+        return response()->json(['error' => 'Serial number is required'], 400);
+    }
+
+    // Define o tópico para o MQTT
+    $topic = "device/" . $serialNumber . "/command";
+
+    // Obtém as configurações do .env
+    $mqttHost = env('MQTT_HOST', 'localhost');
+    $mqttPort = env('MQTT_PORT', 1883);
+    $mqttUsername = env('MQTT_USERNAME');
+    $mqttPassword = env('MQTT_PASSWORD');
+    $mqttClientId = env('MQTT_CLIENT_ID');
+
+    // Configuração do cliente MQTT
+    $mqtt = new MqttClient($mqttHost, $mqttPort, $mqttClientId);
+
+    // Criar configurações de conexão
+    $settings = (new ConnectionSettings())
+        ->setUsername($mqttUsername)
+        ->setPassword($mqttPassword)
+        ->setKeepAliveInterval(60); // Define um keep-alive para evitar desconexões
+
+    try {
+        // Conecta ao broker MQTT
+        $mqtt->connect($settings);
+
+        // Publica a mensagem no broker
+        $message = json_encode(['serial_number' => $serialNumber, 'command' => 'start']);
+        $mqtt->publish($topic, $message);
+
+        // Retorna sucesso
+        return response()->json(['success' => 'Serial number sent to device', 'serial_number' => $serialNumber]);
+    } catch (\Exception $e) {
+        // Retorna erro em caso de falha
+        return response()->json(['error' => 'Failed to send message: ' . $e->getMessage()], 500);
+    } finally {
+        // Desconecta do broker
+        $mqtt->disconnect();
+    }
 }
+
+}
+
+

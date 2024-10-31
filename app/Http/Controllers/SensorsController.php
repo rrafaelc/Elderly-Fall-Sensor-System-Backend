@@ -10,10 +10,16 @@ class SensorsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $sensors = Sensor::all();
-        return response()->json($sensors);
+        $page = $request->query('page', 1); // Obtém o parâmetro 'page' da query string, ou usa 1 por padrão
+        $perPage = 10; // Número de itens por página
+
+        // Consulta e paginação, ordenando do mais recente para o mais antigo
+        $sensors = Sensor::orderBy('created_at', 'desc')
+            ->paginate($perPage, ['*'], 'page', $page);
+
+        return response()->json($sensors); // Retorna os dados paginados como JSON
     }
 
     /**

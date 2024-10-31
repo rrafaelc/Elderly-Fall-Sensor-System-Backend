@@ -11,5 +11,5 @@ class Sensor extends Model
     use HasFactory;
     protected $connection = 'mongodb';
     protected $collection = 'sensor_esp';
-    protected $fillable = ['aceleration', 'rotation', 'time'];
+    protected $fillable = ['aceleration', 'rotation', 'time', 'fall', 'level'];
 }
