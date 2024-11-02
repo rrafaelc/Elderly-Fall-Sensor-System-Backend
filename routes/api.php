@@ -49,7 +49,8 @@ Route::patch("device/{device}", "App\Http\Controllers\DevicesController@update")
 Route::delete("device/{device}", "App\Http\Controllers\DevicesController@destroy");
 Route::post("devicecreate", "App\Http\Controllers\DevicesController@create");
 Route::post("serial", "App\Http\Controllers\DevicesController@sendSerialNumber");
-Route::get("user/{user}","App\Http\Controllers\DevicesController@showDeviceByUser");
+
+Route::get("device/user/{user}","App\Http\Controllers\DevicesController@showDeviceByUser");
 
 
 
