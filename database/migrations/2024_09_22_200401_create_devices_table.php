@@ -13,13 +13,11 @@ return new class extends Migration
     {
         Schema::connection('mysql')->create('devices', function (Blueprint $table) {
             $table->id();
-            //$table->bigInteger('user_id');
             $table->string('name', 50);
-            $table->integer('whatsapp_number');
             $table->boolean('status')->default(1);
+            $table->string('serial_number');
             $table->dateTime('last_verification')->nullable();
             $table->timestamps();
-
             $table->foreignId('user_id')->constrained('users');
         });
     }

@@ -25,11 +25,9 @@ class PersonsController extends Controller
         $person = Person::create([
             'user_id' => $request->input('user_id'),
             'name' => $request->input('name'),
-            'whatsapp_number' => $request->input('whatsapp_number'),
-            'email' => $request->input('email'),
-            'address' => $request->input('address'),
-            'rg' => $request->input('rg'),
-            'cpf' => $request->input('cpf')
+            'cpf' => $request->input('cpf'),
+            'email' => $request->input('email')
+
         ]);
         return $person;
     }
@@ -50,9 +48,7 @@ class PersonsController extends Controller
         if ($person === null) {
             return response()->json(['erro' => 'não foi possivel atualizar, usuário não encontrado.'], 404);
         }
-        $person->name = ($request->input('name'));
-        $person->email = ($request->input('email'));
-        $person->whatsapp_number = ($request->input('whatsapp_number'));
+        $person->update($request->all());
 
         $person->save();
 
