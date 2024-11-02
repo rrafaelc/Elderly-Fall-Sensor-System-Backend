@@ -47,6 +47,11 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
+    }
+
 
     public function persons()
     {

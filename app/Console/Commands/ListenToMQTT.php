@@ -40,10 +40,10 @@ class ListenToMQTT extends Command
                 $this->info("Mensagem recebida em {$topic}: {$message}");
                 MQTTController::processData($message);
             });
-            $mqtt->subscribe('taisbuenovidotto@gmail.com/1', function ($topic, $message) {
-                $this->info("Mensagem recebida em {$topic}: {$message}");
-                MQTTController::processData($message);
-            });
+            // $mqtt->subscribe('taisbuenovidotto@gmail.com/1', function ($topic, $message) {
+            //     $this->info("Mensagem recebida em {$topic}: {$message}");
+            //     MQTTController::processData($message);
+            // });
 
 
             // Manter o script em execução

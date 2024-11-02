@@ -9,6 +9,7 @@ use App\Services\MqttService;
 use PhpMqtt\Client\MqttClient;
 use PhpMqtt\Client\ConnectionSettings;
 //use App\Models\PersonDevice;
+use App\Models\User;
 
 class DevicesController extends Controller
 {
@@ -48,10 +49,11 @@ class DevicesController extends Controller
         $request->validate([
             'user_id' => 'required|exists:users,id',
             'name' => 'required|string',
-            'whatsapp_number' =>'required|integer'
+            'serial_number' => 'required|string'
+
         ]);
 
-        $device = Device::create(['name' => $request->name,'user_id' => $request->user_id,         'whatsapp_number' => $request->whatsapp_number]);
+        $device = Device::create(['name' => $request->name,'user_id' => $request->user_id,'serial_number' => $request->serial_number]);
 
         return response()->json(['message' => 'Device created and associated successfully.', 'device' => $device]);
     }
@@ -66,11 +68,10 @@ class DevicesController extends Controller
     public function store(Request $request)
     {
 
-       // $request->validate($this->user->rules(), $this->user->feedback());
         $device = device::create([
+            'user_id' => $request->input('user_id'),
             'name' => $request->input('name'),
-            'whatsapp_number' => $request->input('whatsapp_number'),
-
+            'serial_number' =>$request->input('serial_number')
         ]);
         return $device;
     }
@@ -92,10 +93,9 @@ class DevicesController extends Controller
             return response()->json(['erro' => 'não foi possivel atualizar, dispositivo não encontrado.'], 404);
         }
 
-        $device->device_name = ($request->input('device_name'));
-        $device->whatsapp_number = ($request->input('whatsapp_number'));
+        $device->update($request->all());
         $device->save();
-        //$user->update($request->all());
+
         return response()->json($device, 200);
     }
 
@@ -104,6 +104,23 @@ class DevicesController extends Controller
         $device->delete();
         return response()->json(['sucess' => true]);
     }
+
+    public function showDeviceByUser($userId)
+{
+    $user = User::find($userId);
+
+    if ($user === null) {
+        return response()->json(['erro' => 'Usuário não encontrado.'], 404);
+    }
+
+    $device = $user->devices()->where('user_id', $userId)->first();
+
+    if ($device === null) {
+        return response()->json(['erro' => 'Dispositivo não encontrado para este usuário.'], 404);
+    }
+
+    return response()->json($device, 200);
+}
 
 
     public function sendSerialNumber(Request $request)

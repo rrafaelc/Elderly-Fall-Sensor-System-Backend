@@ -17,6 +17,7 @@ use App\Http\Controllers\SensorsController;
 Route::get("user", "App\Http\Controllers\UsersController@index");
 Route::get("user/{user}", "App\Http\Controllers\UsersController@show");
 Route::post("user", "App\Http\Controllers\UsersController@store");
+//Route::patch("user/{user}", "App\Http\Controllers\UsersController@update");
 
 
 //JWT ROUTES
@@ -48,6 +49,8 @@ Route::patch("device/{device}", "App\Http\Controllers\DevicesController@update")
 Route::delete("device/{device}", "App\Http\Controllers\DevicesController@destroy");
 Route::post("devicecreate", "App\Http\Controllers\DevicesController@create");
 Route::post("serial", "App\Http\Controllers\DevicesController@sendSerialNumber");
+Route::get("user/{user}","App\Http\Controllers\DevicesController@showDeviceByUser");
+
 
 
 //SENSOR ROUTES
