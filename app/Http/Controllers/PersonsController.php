@@ -21,18 +21,27 @@ class PersonsController extends Controller
 
     public function store(Request $request)
     {
-
-        $person = Person::create([
-            'user_id' => $request->input('user_id'),
-            'name' => $request->input('name'),
-            'whatsapp_number' => $request->input('whatsapp_number'),
-            'email' => $request->input('email'),
-            'address' => $request->input('address'),
-            'rg' => $request->input('rg'),
-            'cpf' => $request->input('cpf')
+        $validatedData = $request->validate([
+            'user_id' => 'required|integer',
+            'name' => 'required|string|max:255',
+            'rg' => 'nullable|string|max:20',
+            'cpf' => 'required|string|max:20|unique:persons',
+            'date_of_birth' => 'nullable|date',
+            'blood_type' => 'nullable|string|max:3',
+            'street' => 'nullable|string|max:255',
+            'street_number' => 'nullable|string|max:10',
+            'neighborhood' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:255',
+            'state' => 'nullable|string|max:2',
+            'zip_code' => 'nullable|string|max:10',
+            'conditions' => 'nullable|string'
         ]);
-        return $person;
+
+        $person = Person::create($validatedData);
+
+        return response()->json($person, 201);
     }
+
 
     public function show($id)
     {
@@ -50,9 +59,7 @@ class PersonsController extends Controller
         if ($person === null) {
             return response()->json(['erro' => 'não foi possivel atualizar, usuário não encontrado.'], 404);
         }
-        $person->name = ($request->input('name'));
-        $person->email = ($request->input('email'));
-        $person->whatsapp_number = ($request->input('whatsapp_number'));
+        $person->update($request->all());
 
         $person->save();
 

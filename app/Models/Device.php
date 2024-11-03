@@ -9,10 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 class Device extends Model
 {
 
-
+    protected $connection = 'mysql';
     use HasFactory;
-    protected $fillable = ['user_id', 'person_id',
-        'name',
+    protected $fillable = ['user_id',
+        'name', 'serial_number'
     ];
 
 
@@ -22,4 +22,6 @@ class Device extends Model
     {
         return $this->belongsToMany(Person::class, 'persons_devices');
     }
+
+
 }

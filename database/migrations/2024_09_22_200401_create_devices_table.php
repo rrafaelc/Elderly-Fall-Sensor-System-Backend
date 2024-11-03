@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('devices', function (Blueprint $table) {
+        Schema::connection('mysql')->create('devices', function (Blueprint $table) {
             $table->id();
             $table->string('name', 50);
             $table->boolean('status')->default(1);
+            $table->string('serial_number');
             $table->dateTime('last_verification')->nullable();
             $table->timestamps();
+            $table->foreignId('user_id')->constrained('users');
         });
     }
 
@@ -25,7 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('devices');
+        Schema::connection('mysql')->dropIfExists('devices');
 
     }
 };

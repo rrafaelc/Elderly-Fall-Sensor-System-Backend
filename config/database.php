@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'sqlite'),
+    'default' => env('DB_CONNECTION', 'mysql'),
 
     /*
     |--------------------------------------------------------------------------
@@ -111,6 +111,11 @@ return [
             // 'encrypt' => env('DB_ENCRYPT', 'yes'),
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
+        'mongodb' => [
+    'driver' => 'mongodb',
+    'dsn' => env('MONGO_DB_URI'),
+    'database' => env('MONGO_DB_DATABASE','elderly_mongodb'),
+  ],
 
     ],
 

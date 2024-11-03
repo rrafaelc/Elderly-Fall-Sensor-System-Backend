@@ -17,6 +17,7 @@ class User extends Authenticatable implements JWTSubject
      *
      * @var array<int, string>
      */
+    protected $connection = 'mysql';
     protected $fillable = ['whatsapp_number',
         'name',
         'email',
@@ -44,6 +45,11 @@ class User extends Authenticatable implements JWTSubject
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    public function devices()
+    {
+        return $this->hasMany(Device::class);
     }
 
 

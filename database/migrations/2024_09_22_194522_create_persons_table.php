@@ -11,15 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('persons', function (Blueprint $table) {
+        Schema::connection('mysql')->create('persons', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->integer('whatsapp_number');
-            $table->string('address');
-            $table->string('rg');
+            $table->date('date_of_birth')->nullable();
+            $table->string('blood_type')->nullable();
+            $table->string('rg')->nullable();
             $table->string('cpf');
+            $table->string('street')->nullable();
+            $table->string('street_number')->nullable();
+            $table->string('neighborhood')->nullable();
+            $table->string('city')->nullable();
+            $table->string('state', 2)->nullable();
+            $table->string('zip_code', 9)->nullable();
+            $table->string('conditions')->nullable();
             $table->string('name', 50);
-            $table->string('email', 50);
+
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users');
@@ -31,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('persons');
+        Schema::connection('mysql')->dropIfExists('persons');
     }
 };

@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class Person extends Model
 {
     use HasFactory;
-    protected $fillable = ['user_id', 'name','email', 'whatsapp_number', 'address', 'rg', 'cpf'];
+    protected $connection = 'mysql';
+    protected $fillable = ['user_id', 'name', 'rg', 'cpf','date_of_birth', 'blood_type', 'street', 'street_number', 'neighborhood', 'city', 'state', 'zip_code', 'conditions' ];
     protected $table = 'persons';
 
     public function user()
