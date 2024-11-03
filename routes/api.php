@@ -59,4 +59,5 @@ Route::get("sensor", "App\Http\Controllers\SensorsController@index");
 Route::get("sensor/{sensor}", "App\Http\Controllers\SensorsController@show");
 Route::post("sensor", "App\Http\Controllers\SensorsController@store");
 
+Route::get("sqlsensor", "App\Http\Controllers\MQTTController@index");
 });
