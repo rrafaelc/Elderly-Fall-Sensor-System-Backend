@@ -13,7 +13,8 @@
         "php-mqtt/client": "^2.1",
         "php-mqtt/laravel-client": "^1.5",
         "php-open-source-saver/jwt-auth": "^2.3",
-        "phpoffice/phpspreadsheet": "^3.3"
+        "phpoffice/phpspreadsheet": "^3.3",
+        "twilio/sdk": "^8.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
