@@ -18,6 +18,7 @@ Route::get("user", "App\Http\Controllers\UsersController@index");
 Route::get("user/{user}", "App\Http\Controllers\UsersController@show");
 Route::post("user", "App\Http\Controllers\UsersController@store");
 //Route::patch("user/{user}", "App\Http\Controllers\UsersController@update");
+Route::get("sendmsg", "App\Http\Controllers\NotificationController@sendWhatsAppMessage");
 
 
 //JWT ROUTES

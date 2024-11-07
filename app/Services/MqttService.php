@@ -29,16 +29,17 @@ class MqttService
 
     public function listen()
     {
-        $this->client->subscribe(env('MQTT_TOPIC'), function (string $topic, string $message) {
-            MQTTController::processDataMongo($message);
-        }, 0);
 
         $this->client->subscribe(env('MQTT_TOPIC'), function (string $topic, string $message) {
             MQTTController::processData($message);
         }, 0);
 
+        // $this->client->subscribe(env('MQTT_TOPIC'), function (string $topic, string $message) {
+        //     MQTTController::processDataMongo($message);
+        // }, 0);
 
         $this->client->loop(true);
     }
+
 }
 

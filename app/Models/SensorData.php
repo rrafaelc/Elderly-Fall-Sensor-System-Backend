@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SensorData extends Model
 {
+
+    protected $connection = 'mysql';
+    protected $table = 'sensor_data';
     protected $fillable = [
         'serial_number',
         'event_type',
@@ -18,4 +21,8 @@ class SensorData extends Model
         'gy',
         'gz'
     ];
+
 }
+
+
+
