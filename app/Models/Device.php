@@ -11,8 +11,11 @@ class Device extends Model
 
     protected $connection = 'mysql';
     use HasFactory;
-    protected $fillable = ['user_id',
-        'name', 'serial_number'
+    protected $fillable = [
+        'user_id',
+        'name',
+        'serial_number',
+        'timer'
     ];
 
 
@@ -22,6 +25,4 @@ class Device extends Model
     {
         return $this->belongsToMany(Person::class, 'persons_devices');
     }
-
-
 }
