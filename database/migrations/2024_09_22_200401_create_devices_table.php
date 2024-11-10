@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name', 50);
             $table->boolean('status')->default(1);
             $table->string('serial_number');
+            $table->double('timer')->default(1);
             $table->dateTime('last_verification')->nullable();
             $table->timestamps();
             $table->foreignId('user_id')->constrained('users');
@@ -28,6 +29,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::connection('mysql')->dropIfExists('devices');
-
     }
 };
