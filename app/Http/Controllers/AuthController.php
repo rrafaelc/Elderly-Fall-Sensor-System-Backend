@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-//use Tymon\JWTAuth\Facades\JWTAuth;
 use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
-//use PHPOpenSourceSaver\JWTAuth\Facades\JWTFactory;
 
 
 class AuthController extends Controller

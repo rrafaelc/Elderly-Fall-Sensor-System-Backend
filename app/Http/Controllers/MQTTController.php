@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Sensor;
 use Illuminate\Support\Facades\Log;
 use App\Models\SensorData;
+use App\Models\Device;
+use App\Models\User;
 
 class MQTTController extends Controller
 {
@@ -56,6 +57,8 @@ class MQTTController extends Controller
 
             // Loga mensagem de sucesso
             Log::info('Dados salvos no MySQL: ' . json_encode($data));
+
+            self::validateAndNotify($data);
         } catch (\Exception $e) {
             Log::error('Erro ao salvar dados no MySQL: ' . $e->getMessage());
         }
@@ -65,68 +68,38 @@ class MQTTController extends Controller
     }
 }
 
+public static function validateAndNotify($data)
+{
+    // Verifique se o evento é uma queda e se o valor de `is_fall` é `true`
+    if ($data['event_type'] === 'queda' && $data['is_fall'] === true) {
+        try {
+            // Busca o dispositivo usando o `serial_number`
+            $device = Device::where('serial_number', $data['serial_number'])->first();
 
+            // Verifica se o dispositivo foi encontrado
+            if ($device) {
+                // Obtém o `user_id` associado ao dispositivo
+                $userId = $device->user_id;
 
+                // Busca o usuário associado ao `user_id` e obtém o número do WhatsApp
+                $user = User::find($userId);
 
+                if ($user && $user->whatsapp_number) {
+                    // Aqui você pode implementar o envio de notificação via WhatsApp
+                    // Enviar notificação para o número de WhatsApp
+                    Log::info('Notificação enviada para o WhatsApp: ' . $user->whatsapp_number);
 
-// //teste inicial
-//     public static function processData1($message)
-//     {
-//         // Decodificar a mensagem JSON
-//         $data = json_decode($message, true);
-
-//         // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
-//         if (is_array($data) && isset($data[0]['aceleration'], $data[0]['rotation'], $data[0]['time'], $data[0]['fall'],$data[0]['level'] )) {
-//             // Criar um novo registro no MongoDB
-//             $sensorData = new Sensor();
-//             $sensorData->aceleration = $data[0]['aceleration'];
-//             $sensorData->rotation = $data[0]['rotation'];
-//             $sensorData->time = $data[0]['time'];
-//             $sensorData->fall = $data[0]['fall'];
-//             $sensorData->level = $data[0]['level'];
-
-//             // Salvar no MongoDB
-//             if ($sensorData->save()) {
-//                 // Logar a mensagem de sucesso
-//                 Log::info('Dados salvos no MongoDB: ' . json_encode($data));
-//             } else {
-//                 // Logar erro se falhar ao salvar
-//                 Log::error('Erro ao salvar dados no MongoDB');
-//             }
-//         } else {
-//             // Logar um aviso caso a mensagem não contenha os dados esperados
-//             Log::warning('Dados inválidos recebidos: ' . $message);
-//         }
-//     }
-
-//     public static function processDataMongo($message)
-// {
-//     // Decodificar a mensagem JSON
-//     $data = json_decode($message, true);
-
-//     // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
-//     if (is_array($data) && isset($data['serial_number'], $data['event_type'], $data['is_fall'], $data['is_impact'], $data['acceleration'], $data['gyroscope'])) {
-//         // Criar um novo registro no MongoDB
-//         $sensorData = new Sensor();
-//         $sensorData->serial_number = $data['serial_number'];
-//         $sensorData->event_type = $data['event_type'];
-//         $sensorData->is_fall = $data['is_fall'];
-//         $sensorData->is_impact = $data['is_impact'];
-//         $sensorData->acceleration = $data['acceleration'];
-//         $sensorData->gyroscope = $data['gyroscope'];
-
-//         // Salvar no MongoDB
-//         if ($sensorData->save()) {
-//             // Logar a mensagem de sucesso
-//             Log::info('Dados salvos no MongoDB: ' . json_encode($data));
-//         } else {
-//             // Logar erro se falhar ao salvar
-//             Log::error('Erro ao salvar dados no MongoDB');
-//         }
-//     } else {
-//         // Logar um aviso caso a mensagem não contenha os dados esperados
-//         Log::warning('Dados inválidos recebidos: ' . $message);
-//     }
-// }
-
+                    // Exemplo de integração para enviar a notificação
+                    // sendWhatsAppNotification($user->whatsapp_number, 'Alerta: Queda detectada!');
+                } else {
+                    Log::warning('Usuário não encontrado ou número de WhatsApp ausente para o serial number: ' . $data['serial_number']);
+                }
+            } else {
+                Log::warning('Dispositivo não encontrado para o serial number: ' . $data['serial_number']);
+            }
+        } catch (\Exception $e) {
+            Log::error('Erro ao buscar usuário ou enviar notificação: ' . $e->getMessage());
+        }
+    }
+ }
 }

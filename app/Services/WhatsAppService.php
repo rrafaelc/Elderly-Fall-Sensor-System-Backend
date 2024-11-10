@@ -3,27 +3,48 @@
 namespace App\Services;
 
 use Twilio\Rest\Client;
+use Twilio\Exceptions\RestException;
+
 
 class WhatsAppService
 {
     protected $twilio;
 
+
     public function __construct()
     {
-        $this->twilio = new Client(
-            env('TWILIO_SID'),
-            env('TWILIO_AUTH_TOKEN')
-        );
-    }
+        $sid = env('TWILIO_SID');
+        $token = env('TWILIO_AUTH_TOKEN');
 
-    public function sendMessage($to, $message)
+        if (empty($sid) || empty($token)) {
+            throw new \Exception('Twilio SID ou Token de Autenticação não configurados');
+        }
+
+        $this->twilio = new Client($sid, $token);
+    }
+    public function sendWhatsAppMessage($to, $message)
     {
-        return $this->twilio->messages->create(
-            "whatsapp:" . $to, // Número do destinatário no formato WhatsApp
-            [
-                "from" => env('TWILIO_WHATSAPP_NUMBER'),
-                "body" => $message
-            ]
-        );
+        try {
+            $from = "whatsapp:" . env('TWILIO_WHATSAPP_NUMBER');
+            $to = "whatsapp:" . $to;
+
+            $this->twilio->messages->create($to, [
+                'from' => $from,
+                'body' => $message,
+            ]);
+
+            return [
+                'status' => 'success',
+                'message' => 'Mensagem enviada com sucesso!',
+
+            ];
+
+
+        } catch (RestException $e) {
+            return [
+                'status' => 'error',
+                'message' => 'Erro ao enviar mensagem: ' . $e->getMessage(),
+            ];
+        }
     }
 }
