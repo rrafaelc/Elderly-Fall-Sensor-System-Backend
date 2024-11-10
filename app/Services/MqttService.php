@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use PhpMqtt\Client\MqttClient;
@@ -41,5 +42,8 @@ class MqttService
         $this->client->loop(true);
     }
 
+    public function publish($topic, $message)
+    {
+        $this->client->publish($topic, $message, 0);
+    }
 }
-
