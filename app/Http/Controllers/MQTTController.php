@@ -6,9 +6,17 @@ use Illuminate\Support\Facades\Log;
 use App\Models\SensorData;
 use App\Models\Device;
 use App\Models\User;
+use App\Services\WhatsAppService;
 
 class MQTTController extends Controller
 {
+
+    protected $whatsappService;
+
+    public function __construct(WhatsAppService $whatsappService)
+    {
+        $this->whatsappService = $whatsappService;
+    }
 
     public function index()
     {
@@ -58,7 +66,7 @@ class MQTTController extends Controller
             // Loga mensagem de sucesso
             Log::info('Dados salvos no MySQL: ' . json_encode($data));
 
-            self::validateAndNotify($data);
+
         } catch (\Exception $e) {
             Log::error('Erro ao salvar dados no MySQL: ' . $e->getMessage());
         }
@@ -68,38 +76,46 @@ class MQTTController extends Controller
     }
 }
 
-public static function validateAndNotify($data)
-{
-    // Verifique se o evento é uma queda e se o valor de `is_fall` é `true`
-    if ($data['event_type'] === 'queda' && $data['is_fall'] === true) {
-        try {
-            // Busca o dispositivo usando o `serial_number`
-            $device = Device::where('serial_number', $data['serial_number'])->first();
+public function processDataWhats($message)
+    {
+        // Decodificar a mensagem JSON
+        $data = json_decode($message, true);
 
-            // Verifica se o dispositivo foi encontrado
-            if ($device) {
-                // Obtém o `user_id` associado ao dispositivo
-                $userId = $device->user_id;
+        // Loga os dados recebidos para análise
+        Log::info('Dados recebidos no MQTT: ' . $message);
 
-                // Busca o usuário associado ao `user_id` e obtém o número do WhatsApp
-                $user = User::find($userId);
+        // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
+        if (is_array($data) && isset($data['serial_number'], $data['event_type'], $data['is_fall'])) {
+            // Verifica se o evento é uma queda e se `is_fall` é igual a 1
+            if ($data['event_type'] === 'queda' && $data['is_fall'] === 1) {
 
-                if ($user && $user->whatsapp_number) {
-                    // Aqui você pode implementar o envio de notificação via WhatsApp
-                    // Enviar notificação para o número de WhatsApp
-                    Log::info('Notificação enviada para o WhatsApp: ' . $user->whatsapp_number);
+                // Busca o dispositivo usando o `serial_number`
+                $device = Device::where('serial_number', $data['serial_number'])->first();
 
-                    // Exemplo de integração para enviar a notificação
-                    // sendWhatsAppNotification($user->whatsapp_number, 'Alerta: Queda detectada!');
-                } else {
-                    Log::warning('Usuário não encontrado ou número de WhatsApp ausente para o serial number: ' . $data['serial_number']);
+                // Verifica se o dispositivo foi encontrado
+                if ($device) {
+                    // Obtém o `user_id` associado ao dispositivo
+                    $userId = $device->user_id;
+
+                    // Busca o usuário associado ao `user_id` e obtém o número do WhatsApp
+                    $user = User::find($userId);
+
+                    if ($user && $user->whatsapp_number) {
+                        // Enviar notificação para o número de WhatsApp do usuário
+                        $to = $user->whatsapp_number; // Número do usuário
+                        $alertMessage = 'Alerta: Uma queda foi detectada. Por favor, verifique.';
+
+                        // Envia a mensagem via serviço de WhatsApp
+                        $response = $this->whatsappService->sendWhatsAppMessage($to, $alertMessage);
+
+                        // Retorna o status da resposta
+                        return response()->json([
+                            'status' => $response['status'],
+                            'message' => $response['message']
+                        ]);
+                    }
                 }
-            } else {
-                Log::warning('Dispositivo não encontrado para o serial number: ' . $data['serial_number']);
             }
-        } catch (\Exception $e) {
-            Log::error('Erro ao buscar usuário ou enviar notificação: ' . $e->getMessage());
         }
     }
- }
 }

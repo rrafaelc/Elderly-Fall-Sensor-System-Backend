@@ -35,6 +35,10 @@ class MqttService
             MQTTController::processData($message);
         }, 0);
 
+        $this->client->subscribe(env('MQTT_TOPIC'), function (string $topic, string $message) {
+            MQTTController::processDataWhats($message);
+        }, 0);
+
         // $this->client->subscribe(env('MQTT_TOPIC'), function (string $topic, string $message) {
         //     MQTTController::processDataMongo($message);
         // }, 0);
