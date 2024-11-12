@@ -76,7 +76,7 @@ class MQTTController extends Controller
     }
 }
 
-public function processDataWhats($message)
+public static function processDataWhats($message)
     {
         // Decodificar a mensagem JSON
         $data = json_decode($message, true);
@@ -102,11 +102,12 @@ public function processDataWhats($message)
 
                     if ($user && $user->whatsapp_number) {
                         // Enviar notificação para o número de WhatsApp do usuário
-                        $to = $user->whatsapp_number; // Número do usuário
+                        $to = '+55' . $user->whatsapp_number; // Número do usuário
                         $alertMessage = 'Alerta: Uma queda foi detectada. Por favor, verifique.';
 
+                        $whatsappService = new WhatsAppService();
                         // Envia a mensagem via serviço de WhatsApp
-                        $response = $this->whatsappService->sendWhatsAppMessage($to, $alertMessage);
+                       $response =  $whatsappService->sendWhatsAppMessage($to, $alertMessage);
 
                         // Retorna o status da resposta
                         return response()->json([
