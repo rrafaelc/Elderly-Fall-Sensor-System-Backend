@@ -9,7 +9,7 @@
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
         "mongodb/laravel-mongodb": "^4.8",
-        "monolog/monolog": "^3.0",
+        "monolog/monolog": "^3.8",
         "nesbot/carbon": "^3.8",
         "php-mqtt/client": "^2.1",
         "php-mqtt/laravel-client": "^1.5",

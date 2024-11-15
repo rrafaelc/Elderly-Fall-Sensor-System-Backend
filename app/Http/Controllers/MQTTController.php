@@ -40,54 +40,51 @@ class MQTTController extends Controller
     }
 
     public static function processData($message)
-{
-    // Decodificar a mensagem JSON
-    $data = json_decode($message, true);
-
-    // Loga os dados recebidos para análise
-    Log::info('Dados recebidos no MQTT: ' . $message);
-
-    // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
-    if (is_array($data) && isset($data['serial_number'], $data['event_type'], $data['is_fall'], $data['is_impact'], $data['acceleration'], $data['gyroscope'])) {
-        try {
-            SensorData::create([
-                'serial_number' => $data['serial_number'],
-                'event_type' => $data['event_type'],
-                'is_fall' => $data['is_fall'],
-                'is_impact' => $data['is_impact'],
-                'ax' => $data['acceleration']['ax'],
-                'ay' => $data['acceleration']['ay'],
-                'az' => $data['acceleration']['az'],
-                'gx' => $data['gyroscope']['gx'],
-                'gy' => $data['gyroscope']['gy'],
-                'gz' => $data['gyroscope']['gz']
-            ]);
-
-            // Loga mensagem de sucesso
-            Log::info('Dados salvos no MySQL: ' . json_encode($data));
-
-
-        } catch (\Exception $e) {
-            Log::error('Erro ao salvar dados no MySQL: ' . $e->getMessage());
-        }
-    } else {
-        // Loga um aviso com os dados inválidos recebidos para análise
-        Log::warning('Dados inválidos recebidos: ' . $message);
-    }
-}
-
-public static function processDataWhats($message)
     {
         // Decodificar a mensagem JSON
         $data = json_decode($message, true);
 
         // Loga os dados recebidos para análise
-        Log::info('Dados recebidos no MQTT: ' . $message);
+        Log::info('Dados recebidos no MQTT');
+
+        // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
+        if (is_array($data) && isset($data['serial_number'], $data['event_type'], $data['is_fall'], $data['is_impact'], $data['acceleration'], $data['gyroscope'])) {
+            try {
+                SensorData::create([
+                    'serial_number' => $data['serial_number'],
+                    'event_type' => $data['event_type'],
+                    'is_fall' => $data['is_fall'],
+                    'is_impact' => $data['is_impact'],
+                    'ax' => $data['acceleration']['ax'],
+                    'ay' => $data['acceleration']['ay'],
+                    'az' => $data['acceleration']['az'],
+                    'gx' => $data['gyroscope']['gx'],
+                    'gy' => $data['gyroscope']['gy'],
+                    'gz' => $data['gyroscope']['gz']
+                ]);
+
+                // Loga mensagem de sucesso
+                Log::info('Dados salvos no MySQL');
+            } catch (\Exception $e) {
+                Log::error('Erro ao salvar dados no MySQL: ' . $e->getMessage());
+            }
+        } else {
+            // Loga um aviso com os dados inválidos recebidos para análise
+            Log::warning('Dados inválidos recebidos');
+        }
+    }
+
+    public static function processDataWhats($message)
+    {
+        // Decodificar a mensagem JSON
+        $data = json_decode($message, true);
+
+        // Loga os dados recebidos para análise
+        Log::info('Processando dados whatsapp');
 
         // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
         if (is_array($data) && isset($data['serial_number'], $data['event_type'], $data['is_fall'])) {
-            // Verifica se o evento é uma queda e se `is_fall` é igual a 1
-            if ($data['event_type'] === 'queda' && $data['is_fall'] === 1) {
+            if ($data['event_type'] === 'emergencia' || ($data['event_type'] === 'queda' && ($data['is_fall'] === 1 || $data['is_fall'] === true))) {
 
                 // Busca o dispositivo usando o `serial_number`
                 $device = Device::where('serial_number', $data['serial_number'])->first();
@@ -107,7 +104,7 @@ public static function processDataWhats($message)
 
                         $whatsappService = new WhatsAppService();
                         // Envia a mensagem via serviço de WhatsApp
-                       $response =  $whatsappService->sendWhatsAppMessage($to, $alertMessage);
+                        $response =  $whatsappService->sendWhatsAppMessage($to, $alertMessage);
 
                         // Retorna o status da resposta
                         return response()->json([

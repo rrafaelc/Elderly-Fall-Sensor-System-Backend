@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use Twilio\Rest\Client;
 use Twilio\Exceptions\RestException;
 
@@ -34,19 +35,11 @@ class WhatsAppService
             ]);
 
             if ($messageResponse->status === 'queued' || $messageResponse->status === 'sent' || $messageResponse->status === 'delivered') {
-                print_r([
-                    'message' => 'Mensagem enviada com sucesso!',
-                    'message_sid' => $messageResponse->sid,
-                    'status_code' => $messageResponse->status,
-                    'to' => $messageResponse->to,
-                ]);
+                Log::info("Mensagem enviada com sucesso!");
+                Log::info("Para: {$to}");
             } else {
-                print_r([
-                    'status' => 'warning',
-                    'message' => 'Mensagem não enviada com sucesso. Status: ' . $messageResponse->status,
-                    'message_sid' => $messageResponse->sid,
-                    'status_code' => $messageResponse->status,
-                ]);
+                Log::warning("Mensagem não enviada com sucesso.");
+                Log::warning("Status: {$messageResponse->status}");
             }
 
             return [
