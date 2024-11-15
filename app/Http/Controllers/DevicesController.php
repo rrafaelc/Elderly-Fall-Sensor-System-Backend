@@ -28,7 +28,7 @@ class DevicesController extends Controller
         $mqttService->publish($topic, $message);
     }
 
-    public function create(Request $request,  MqttService $mqttService)
+    public function create(Request $request, MqttService $mqttService)
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
