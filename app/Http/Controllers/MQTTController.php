@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Log;
 use App\Models\SensorData;
 use App\Models\Device;
+use App\Models\Person;
 use App\Models\User;
 use App\Services\WhatsAppService;
 
 class MQTTController extends Controller
 {
-
     protected $whatsappService;
 
     public function __construct(WhatsAppService $whatsappService)
@@ -96,11 +96,13 @@ class MQTTController extends Controller
 
                     // Busca o usuário associado ao `user_id` e obtém o número do WhatsApp
                     $user = User::find($userId);
+                    $person = Person::find($userId);
 
                     if ($user && $user->whatsapp_number) {
                         // Enviar notificação para o número de WhatsApp do usuário
                         $to = '+55' . $user->whatsapp_number; // Número do usuário
-                        $alertMessage = 'Alerta: Uma queda foi detectada. Por favor, verifique.';
+                        $gravidade = $data['event_type'] === 'emergencia' ? 2 : 1;
+                        $alertMessage = self::formatarMensagem($gravidade, $user->name, $device->name, $person->name);
 
                         $whatsappService = new WhatsAppService();
                         // Envia a mensagem via serviço de WhatsApp
@@ -113,7 +115,31 @@ class MQTTController extends Controller
                         ]);
                     }
                 }
+            } else {
+                Log::info("Queda não detectada, dados salvos no banco");
             }
         }
+    }
+
+    // Função formatarMensagem movida para fora de processDataWhats
+    public static function formatarMensagem(int $gravidade = 1, string $usuarioNome, string $sensorNome, string $idosoNome)
+    {
+        // 1 - Queda, 2 - Emergência
+
+        $msg = "";
+
+        if ($gravidade == 1) {
+            $msg = "⚠️ **Alerta de Queda** ⚠️\n\n";
+            $msg .= "Olá {$usuarioNome}, uma *queda* foi detectada! 😨\n";
+            $msg .= "O sensor *[{$sensorNome}]* detectou uma queda do(a) idoso(a) *{$idosoNome}*. 🧑‍🦳💥\n\n";
+            $msg .= "📞 Por favor, verifique o mais rápido possível!";
+        } elseif ($gravidade == 2) {
+            $msg = "🚨 **Alerta de Emergência** 🚨\n\n";
+            $msg .= "Olá {$usuarioNome}, uma *emergência* foi detectada! ⚡\n";
+            $msg .= "O sensor *[{$sensorNome}]* indicou uma situação crítica do idoso(a) *{$idosoNome}*. 😱\n\n";
+            $msg .= "📞 Por favor, entre em contato imediatamente!";
+        }
+
+        return $msg;
     }
 }
