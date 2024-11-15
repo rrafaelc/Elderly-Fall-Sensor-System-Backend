@@ -11,10 +11,10 @@ use App\Models\User;
 
 class DevicesController extends Controller
 {
+    private Device $device;
 
     public function __construct(Device $device)
     {
-
         $this->device = $device;
     }
 
@@ -47,13 +47,11 @@ class DevicesController extends Controller
 
     public function index()
     {
-
         return response()->json($this->device->all(), 200);
     }
 
     public function store(Request $request)
     {
-
         $device = device::create([
             'user_id' => $request->input('user_id'),
             'name' => $request->input('name'),
@@ -73,7 +71,6 @@ class DevicesController extends Controller
 
     public function update(Request $request, $id, MqttService $mqttService)
     {
-
         $device = $this->device->find($id);
         if ($device === null) {
             return response()->json(['erro' => 'não foi possivel atualizar, dispositivo não encontrado.'], 404);
