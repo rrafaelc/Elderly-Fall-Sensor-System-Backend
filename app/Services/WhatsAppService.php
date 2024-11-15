@@ -28,18 +28,32 @@ class WhatsAppService
             $from = "whatsapp:" . env('TWILIO_WHATSAPP_NUMBER');
             $to = "whatsapp:" . $to;
 
-            $this->twilio->messages->create($to, [
+            $messageResponse = $this->twilio->messages->create($to, [
                 'from' => $from,
                 'body' => $message,
             ]);
+
+            if ($messageResponse->status === 'queued' || $messageResponse->status === 'sent' || $messageResponse->status === 'delivered') {
+                print_r([
+                    'message' => 'Mensagem enviada com sucesso!',
+                    'message_sid' => $messageResponse->sid,
+                    'status_code' => $messageResponse->status,
+                    'to' => $messageResponse->to,
+                ]);
+            } else {
+                print_r([
+                    'status' => 'warning',
+                    'message' => 'Mensagem não enviada com sucesso. Status: ' . $messageResponse->status,
+                    'message_sid' => $messageResponse->sid,
+                    'status_code' => $messageResponse->status,
+                ]);
+            }
 
             return [
                 'status' => 'success',
                 'message' => 'Mensagem enviada com sucesso!',
 
             ];
-
-
         } catch (RestException $e) {
             return [
                 'status' => 'error',
