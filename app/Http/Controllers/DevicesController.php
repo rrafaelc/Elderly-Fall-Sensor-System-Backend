@@ -4,45 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Device;
-use PhpMqtt\Client\Facades\MQTT;
 use App\Services\MqttService;
 use PhpMqtt\Client\MqttClient;
 use PhpMqtt\Client\ConnectionSettings;
-//use App\Models\PersonDevice;
 use App\Models\User;
 
 class DevicesController extends Controller
 {
+    private Device $device;
 
     public function __construct(Device $device)
     {
-
         $this->device = $device;
     }
-
-
-    // public function create1(Request $request)
-    // {
-    //     $request->validate([
-    //         'user_id' => 'required|exists:users,id', // Verifique se o usuário existe
-    //         //'person_id' => 'required|exists:persons,id', // Verifique se a pessoa existe
-    //         'name' => 'required|string',
-    //         'whatsapp_number' =>'required|integer'
-    //     ]);
-
-    //     // Cria o dispositivo
-    //     $device = Device::create(['name' => $request->name]);
-
-    //     // Associa o usuário, pessoa e dispositivo na tabela intermediária
-    //     PersonDevice::create([
-    //         'user_id' => $request->user_id,
-    //         //'person_id' => $request->person_id,
-    //         'whatsapp_number' => $request->whatsapp_number,
-    //         'device_id' => $device->id,
-    //     ]);
-
-    //     return response()->json(['message' => 'Device created and associated successfully.', 'device' => $device]);
-    // }
 
     public function publishTimerToMqtt(MqttService $mqttService, string $serial_number, float $timer)
     {
@@ -73,13 +47,11 @@ class DevicesController extends Controller
 
     public function index()
     {
-
         return response()->json($this->device->all(), 200);
     }
 
     public function store(Request $request)
     {
-
         $device = device::create([
             'user_id' => $request->input('user_id'),
             'name' => $request->input('name'),
@@ -99,7 +71,6 @@ class DevicesController extends Controller
 
     public function update(Request $request, $id, MqttService $mqttService)
     {
-
         $device = $this->device->find($id);
         if ($device === null) {
             return response()->json(['erro' => 'não foi possivel atualizar, dispositivo não encontrado.'], 404);
