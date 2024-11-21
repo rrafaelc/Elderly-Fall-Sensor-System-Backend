@@ -48,6 +48,9 @@ class MQTTController extends Controller
         Log::info('Dados recebidos no MQTT');
 
         // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
+        if (is_array($data) && isset($data['event_type']) && $data['event_type'] == 'inativo'){
+            return;
+        }
         if (is_array($data) && isset($data['serial_number'], $data['event_type'], $data['is_fall'], $data['is_impact'], $data['acceleration'], $data['gyroscope'])) {
             try {
                 SensorData::create([
@@ -83,8 +86,8 @@ class MQTTController extends Controller
         Log::info('Processando dados whatsapp');
 
         // Verifique se a decodificação foi bem-sucedida e se os dados estão no formato esperado
-        if (is_array($data) && isset($data['serial_number'], $data['event_type'], $data['is_fall'])) {
-            if ($data['event_type'] === 'emergencia' || ($data['event_type'] === 'queda' && ($data['is_fall'] === 1 || $data['is_fall'] === true))) {
+        if (is_array($data) && isset($data['serial_number'], $data['event_type'])) {
+            if ($data['event_type'] === 'emergencia' || ($data['event_type'] === 'inativo')) {
 
                 // Busca o dispositivo usando o `serial_number`
                 $device = Device::where('serial_number', $data['serial_number'])->first();
